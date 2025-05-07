@@ -3,14 +3,16 @@
 {% block title %}Business Name - Register {% endblock %}
 
 {% block content %}
+<!-- Hero Section -->
+
 <div class='container'>
-    <h2 class='Text'>Login</h2>
+    <h2 class='Text'>Register</h2>
     <form method="POST" action="">
         {{ form.hidden_tag() }}
         {{ form.username }}
         {{ form.password }}
         {{ form.submit }}
     </form>
-        <p class="bottom">Already Have an account? <a href="{{ url_for('login') }}">Login here</a></p>
+        <p class="bottom">Already Have an account? <a href="{{ url_for('home') }}">Login here</a></p>
 </div>
 {% endblock %}

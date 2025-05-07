@@ -4,41 +4,34 @@
 
 {% block content %}
 <!-- Hero Section -->
-<div class="px-4 py-5 my-5 text-center">
-    <h1 class="display-5 fw-bold">Welcome to Our Business</h1>
-    <div class="col-lg-6 mx-auto">
-        <p class="lead mb-4">We provide high-quality services to meet all your business needs. With years of experience, our team is ready to help you succeed.</p>
-        <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
+<div class='container'>
 
+    <div class="row">
+        <div class="col-lg-6 mb-4">
+            <img src="static/images/temp.png" class="img-fluid rounded" alt="Test photo" width="400" height="400";>
         </div>
-    </div>
-</div>
+        <div class="col-lg-6">
 
-<!-- Features Section -->
-<div class="row g-4 py-5">
-    <div class="col-md-4">
-        <div class="card h-100">
-            <div class="card-body">
-                <h2 class="card-title">Quality</h2>
-                <p class="card-text">We pride ourselves on delivering top-quality solutions that exceed expectations.</p>
+        <form method="POST" action="">
+            {{ form.hidden_tag() }}
+            <p style="text-align: right;">Username</p>
+            <div style="margin-bottom: 30px; text-align: right;">
+                {{ form.username }}
             </div>
-        </div>
-    </div>
-    <div class="col-md-4">
-        <div class="card h-100">
-            <div class="card-body">
-                <h2 class="card-title">Reliability</h2>
-                <p class="card-text">Count on us to deliver consistent results and meet deadlines every time.</p>
+
+            <p style="text-align: right;">Password</p>
+            <div style="margin-bottom: 30px; text-align: right;">
+                {{ form.password }}
             </div>
-        </div>
-    </div>
-    <div class="col-md-4">
-        <div class="card h-100">
-            <div class="card-body">
-                <h2 class="card-title">Experience</h2>
-                <p class="card-text">With years of industry experience, we know what works and how to get results.</p>
+
+            <div style="text-align: right; margin-right: 10px;">
+                {{ form.submit }}
+                <p class="bottom">Don't have an account? <a href="{{ url_for('register') }}">Register here</a></p>
             </div>
-        </div>
+        </form>
     </div>
+    </div>
+
+
 </div>
 {% endblock %}

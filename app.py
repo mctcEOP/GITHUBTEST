@@ -21,7 +21,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 db = SQLAlchemy(app)
 
 # encrypting passwords
-bycrypt = Bcrypt(app)
+bcrypt = Bcrypt(app)
 
 # Login Managment
 
@@ -37,6 +37,13 @@ class Users(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(30), nullable=False, unique=True)
     password = db.Column(db.String(80), nullable=False)
+    posts = db.relationship('Post', backref='users')
+
+class Post(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    text = db.Column(db.String(30), nullable=False, unique=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+
 
 class RegisterForm(FlaskForm):
     username = StringField(
@@ -54,7 +61,6 @@ class RegisterForm(FlaskForm):
         existing_username = Users.query.filter_by(username=username.data).first()
         if existing_username:
             raise ValidationError("Username already taken, please choose a different one.")
-
     
 class LoginForm(FlaskForm):
     username = StringField(
@@ -67,21 +73,19 @@ class LoginForm(FlaskForm):
     
     submit = SubmitField('Login')
 
-
-@app.route('/')
+@app.route('/', methods=['GET', 'POST'])
 def home():
-    return render_template('home.html')
-
-@app.route('/login', methods=['GET', 'POST'])
-def login():
+    if current_user.is_authenticated: # if user is autheticated and routed to home, redirect to dashboard.
+        return redirect(url_for('dashboard'))
+    
     form = LoginForm()
     if form.validate_on_submit():
         user = Users.query.filter_by(username=form.username.data).first() # check if the username matches one in databae
         if user:
-            if bycrypt.check_password_hash(user.password, form.password.data): # check if password matches the one in database
+            if bcrypt.check_password_hash(user.password, form.password.data): # check if password matches the one in database
                 login_user(user)
                 return redirect(url_for('dashboard')) # redirect to dashboard if login
-    return render_template('login.html', form=form) # creates form variable in html
+    return render_template('home.html', form=form) # creates form variable in html
 
 @app.route('/dashboard', methods=['GET', 'POST'])
 @login_required # login required for dashboard
@@ -92,18 +96,18 @@ def dashboard():
 @login_required
 def logout():
     logout_user()
-    return redirect(url_for('login'))
+    return redirect(url_for('home'))
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     form = RegisterForm()
 
     if form.validate_on_submit():
-        hashed_pass = bycrypt.generate_password_hash(form.password.data)
+        hashed_pass = bcrypt.generate_password_hash(form.password.data)
         new_user = Users(username=form.username.data, password=hashed_pass)
         db.session.add(new_user)
         db.session.commit()
-        return redirect(url_for('login'))
+        return redirect(url_for('home'))
 
     return render_template('register.html', form=form)
 
