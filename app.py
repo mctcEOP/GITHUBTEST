@@ -41,6 +41,7 @@ class Users(db.Model, UserMixin):
 
 class Post(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(30), nullable=False, unique=True)
     text = db.Column(db.String(30), nullable=False, unique=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
@@ -73,6 +74,15 @@ class LoginForm(FlaskForm):
     
     submit = SubmitField('Login')
 
+class PostForm(FlaskForm):
+    title = StringField(
+        validators=[InputRequired(), Length(min=4, max=50)], 
+        render_kw={'placeholder': 'title here'})
+    text = StringField(
+        validators=[InputRequired(), Length(min=4, max=1000)], 
+        render_kw={'placeholder': 'write post here'})
+    submit = SubmitField('Upload')
+
 @app.route('/', methods=['GET', 'POST'])
 def home():
     if current_user.is_authenticated: # if user is autheticated and routed to home, redirect to dashboard.
@@ -90,7 +100,17 @@ def home():
 @app.route('/dashboard', methods=['GET', 'POST'])
 @login_required # login required for dashboard
 def dashboard():
-    return render_template('dashboard.html', username=current_user.username)
+    form = PostForm()
+    if form.validate_on_submit():
+        title = form.title.data
+        text = form.text.data
+        message = Post(title=title, text=text)
+        db.session.add(message)
+        db.session.commit()
+
+    posts = Post.query.all()
+
+    return render_template('dashboard.html', form=form, username=current_user.username, posts=posts)
 
 @app.route('/logout', methods=['GET', 'POST'])
 @login_required
@@ -109,7 +129,7 @@ def register():
         db.session.commit()
         return redirect(url_for('home'))
 
-    return render_template('register.html', form=form)
+    return render_template('register.html', form=form,)
 
 # Run HTML
 if __name__ == '__main__':

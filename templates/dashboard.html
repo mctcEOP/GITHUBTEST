@@ -8,6 +8,24 @@
     <h1>dashboard</h1>
     <p>{{ username }}</p>
     <a href="{{url_for('logout')}}">Log Out</a>
+    <form method="POST" action="">
+    {{ form.hidden_tag() }}
+        <div style="margin-bottom: 30px; text-align: left;">
+            {{ form.title }}
+        </div>
+        <div style="margin-bottom: 30px; text-align: left;">
+            {{ form.text }}
+        </div>
+        <div style="margin-bottom: 30px; text-align: left;">
+            {{ form.submit }}
+        </div>
+    </form>
 
+{% for post in posts %}
+    <div class="card">
+        <h3>{{ post.title }}</h3>
+        <p>{{ post.text }}</p>
+    </div>
 </div>
+{% endfor %}
 {% endblock %}
